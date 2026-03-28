@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.env
+scripts/yt_collector.log
+scripts/yt_collector_error.log
+.DS_Store

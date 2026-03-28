@@ -1,0 +1,25 @@
+{
+  "channels": [
+    {
+      "channel_id": "UCWskYkV4c4S9D__rsfOl2JA",
+      "name": "hkglobalmarket",
+      "display_name": "한경 글로벌마켓",
+      "handle": "@hkglobalmarket",
+      "language_priority": ["ko", "en"]
+    },
+    {
+      "channel_id": "UCIipmgxpUxDmPP-ma3Ahvbw",
+      "name": "MK_Invest",
+      "display_name": "매경 월가월부",
+      "handle": "@MK_Invest",
+      "language_priority": ["ko", "en"]
+    },
+    {
+      "channel_id": "UCOB62fKRT7b73X7tRxMuN2g",
+      "name": "kpunch",
+      "display_name": "박종훈의 지식한방",
+      "handle": "@kpunch",
+      "language_priority": ["ko", "en"]
+    }
+  ]
+}
