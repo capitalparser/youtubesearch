@@ -73,22 +73,32 @@ def extract_links_from_updates(updates: list) -> list:
 
         text = msg.get("text", "")
         urls = URL_PATTERN.findall(text)
+        received_at = datetime.fromtimestamp(
+            msg.get("date", 0), tz=timezone.utc
+        ).strftime("%Y-%m-%d %H:%M UTC")
 
-        # URL이 아닌 일반 메시지는 스킵 (/start, hello 등)
-        if not urls:
+        # 봇 커맨드 스킵 (/start 등)
+        if text.startswith("/"):
             continue
 
-        # URL 외의 텍스트가 있으면 메모로 저장
-        memo = URL_PATTERN.sub("", text).strip()
-
-        for url in urls:
+        if urls:
+            # URL이 있는 메시지 → 링크로 처리
+            memo = URL_PATTERN.sub("", text).strip()
+            for url in urls:
+                links.append({
+                    "url": url.rstrip(".,;:)"),
+                    "type": classify_url(url),
+                    "memo": memo,
+                    "received_at": received_at,
+                    "update_id": update["update_id"],
+                })
+        elif len(text.strip()) > 10:
+            # URL 없는 텍스트 (10자 이상) → 텍스트 메모로 수집
             links.append({
-                "url": url.rstrip(".,;:)"),
-                "type": classify_url(url),
-                "memo": memo,
-                "received_at": datetime.fromtimestamp(
-                    msg.get("date", 0), tz=timezone.utc
-                ).strftime("%Y-%m-%d %H:%M UTC"),
+                "url": "",
+                "type": "text",
+                "memo": text.strip(),
+                "received_at": received_at,
                 "update_id": update["update_id"],
             })
 
