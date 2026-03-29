@@ -17,6 +17,11 @@ import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 from pathlib import Path
 
+# ── 텔레그램 알림 설정 ─────────────────────────────────────
+TG_BOT_TOKEN = "8622128158:AAEfL3xl8Y2p1_Ms78-9wqvsaQ9RoYJog7M"
+TG_CHAT_ID = 7698095566
+TG_API = f"https://api.telegram.org/bot{TG_BOT_TOKEN}"
+
 # ── 경로 설정 (레포 기준) ──────────────────────────────────
 SCRIPT_DIR = Path(__file__).parent
 REPO_ROOT = SCRIPT_DIR.parent
@@ -43,6 +48,17 @@ logging.basicConfig(
     ],
 )
 log = logging.getLogger(__name__)
+
+
+def send_telegram(text: str):
+    """텔레그램으로 알림 메시지 전송"""
+    url = f"{TG_API}/sendMessage"
+    payload = json.dumps({"chat_id": TG_CHAT_ID, "text": text, "parse_mode": "Markdown"}).encode()
+    req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"})
+    try:
+        urllib.request.urlopen(req, timeout=10)
+    except Exception as e:
+        log.warning(f"텔레그램 전송 실패: {e}")
 
 
 def load_index() -> set:
@@ -230,6 +246,15 @@ def main():
 
     save_index(collected)
     log.info(f"=== 완료: {new_count}개 신규 수집 ===")
+
+    # 텔레그램 알림 전송
+    if new_count > 0:
+        lines = []
+        for f in new_files:
+            name = Path(f).stem
+            lines.append(f"• {name}")
+        msg = f"*YouTube 수집 완료* ({new_count}건)\n" + "\n".join(lines)
+        send_telegram(msg)
 
     # 결과를 JSON으로 출력 (트리거에서 활용)
     result = {"new_count": new_count, "files": new_files}

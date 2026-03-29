@@ -27,6 +27,17 @@ API_BASE = f"https://api.telegram.org/bot{BOT_TOKEN}"
 URL_PATTERN = re.compile(r'https?://[^\s<>"\']+')
 
 
+def send_telegram(text: str):
+    """텔레그램으로 알림 메시지 전송"""
+    url = f"{API_BASE}/sendMessage"
+    payload = json.dumps({"chat_id": CHAT_ID, "text": text, "parse_mode": "Markdown"}).encode()
+    req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"})
+    try:
+        urllib.request.urlopen(req, timeout=10)
+    except Exception as e:
+        print(f"Telegram send error: {e}", file=sys.stderr)
+
+
 def load_offset() -> int:
     if OFFSET_FILE.exists():
         return json.loads(OFFSET_FILE.read_text()).get("offset", 0)
@@ -137,6 +148,16 @@ def main():
     if links:
         filepath = save_links(links)
         print(f"Saved {len(links)} links to {filepath.relative_to(REPO_ROOT)}")
+
+        # 텔레그램 알림 전송
+        summary_lines = []
+        for link in links:
+            if link["type"] == "text":
+                summary_lines.append(f"• 📝 텍스트: {link['memo'][:60]}")
+            else:
+                summary_lines.append(f"• 🔗 [{link['type']}] {link['url']}")
+        msg = f"*링크 수집 완료* ({len(links)}건)\n" + "\n".join(summary_lines)
+        send_telegram(msg)
 
     # 결과 출력
     result = {
