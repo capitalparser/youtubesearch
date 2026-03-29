@@ -26,6 +26,9 @@ jobs:
         run: pip install youtube-transcript-api requests anthropic
 
       - name: Collect YouTube videos
+        env:
+          WEBSHARE_PROXY_USER: ${{ secrets.WEBSHARE_PROXY_USER }}
+          WEBSHARE_PROXY_PASS: ${{ secrets.WEBSHARE_PROXY_PASS }}
         run: python3 scripts/yt_collector_remote.py
 
       - name: Collect Telegram links

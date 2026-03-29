@@ -9,6 +9,7 @@ Usage:
 """
 
 import json
+import os
 import sys
 import re
 import logging
@@ -91,10 +92,28 @@ def fetch_rss(channel_id: str) -> list[dict]:
     return videos
 
 
+def _build_proxy_config():
+    """Webshare 프록시 설정 (환경변수에서)"""
+    user = os.environ.get("WEBSHARE_PROXY_USER", "")
+    pwd = os.environ.get("WEBSHARE_PROXY_PASS", "")
+    if not user or not pwd:
+        return None
+    try:
+        from youtube_transcript_api.proxies import WebshareProxyConfig
+        log.info("Webshare 프록시 사용")
+        return WebshareProxyConfig(proxy_username=user, proxy_password=pwd)
+    except ImportError:
+        from youtube_transcript_api.proxies import GenericProxyConfig
+        proxy_url = f"http://{user}:{pwd}@p.webshare.io:80"
+        log.info("Generic 프록시 사용 (fallback)")
+        return GenericProxyConfig(http_url=proxy_url, https_url=proxy_url)
+
+
 def get_transcript(video_id: str, lang_priority: list[str]) -> tuple[list, str, bool]:
     try:
         from youtube_transcript_api import YouTubeTranscriptApi, NoTranscriptFound, TranscriptsDisabled
-        ytt = YouTubeTranscriptApi()
+        proxy_config = _build_proxy_config()
+        ytt = YouTubeTranscriptApi(proxy_config=proxy_config) if proxy_config else YouTubeTranscriptApi()
         transcript_list = ytt.list(video_id)
 
         try:
