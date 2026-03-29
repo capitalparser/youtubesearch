@@ -107,15 +107,19 @@ def find_new_link_jsons() -> list[dict]:
 def enrich_with_claude(content: str, file_type: str = "youtube") -> dict | None:
     """Claude API로 enrichment 수행"""
     if not ANTHROPIC_KEY:
-        print("ANTHROPIC_API_KEY not set", file=sys.stderr)
+        print("ANTHROPIC_API_KEY not set, 규칙 기반 fallback", file=sys.stderr)
         return None
 
     client = anthropic.Anthropic(api_key=ANTHROPIC_KEY)
 
-    if file_type == "youtube":
-        prompt = f"""다음 YouTube 영상 스크립트를 분석하여 JSON으로 반환해줘.
+    has_transcript = "has_transcript: true" in content or "## 스크립트" in content
+    content_snippet = content[:8000] if has_transcript else content[:3000]
 
-{content[:8000]}
+    if file_type == "youtube":
+        context_note = "아래는 YouTube 영상의 전체 스크립트야." if has_transcript else "아래는 YouTube 영상의 제목과 메타데이터만 있어 (자막 없음). 제목에서 최대한 추론해줘."
+        prompt = f"""{context_note}
+
+{content_snippet}
 
 반환 형식 (JSON만, 다른 텍스트 없이):
 {{
@@ -133,11 +137,12 @@ def enrich_with_claude(content: str, file_type: str = "youtube") -> dict | None:
 categories는 매크로/종목분석/투자아이디어/산업분석/시장동향 중 선택.
 sectors는 반도체/AI/소프트웨어/클라우드/에너지/원자재/금융/부동산/헬스케어/소비재/방산/크립토/자동차EV/통신 중 선택.
 tickers는 미국=심볼(MU), 한국=종목명(삼성전자), ETF 포함.
-narrative는 한국어로 작성. 비전문가도 이해할 수 있게 배경과 인과관계를 설명."""
+narrative는 한국어로 작성. 비전문가도 이해할 수 있게 배경과 인과관계를 설명.
+자막이 없으면 summary 항목은 제목에서 추론 가능한 것만, narrative에 "자막 미제공 — 제목 기반 분석"이라고 명시."""
     else:
         prompt = f"""다음 콘텐츠를 분석하여 JSON으로 반환해줘.
 
-{content[:6000]}
+{content_snippet}
 
 반환 형식 (JSON만):
 {{
@@ -370,6 +375,26 @@ def process_links(link_data: list[dict]) -> list[tuple[str, dict]]:
     return results
 
 
+def build_fallback_message(files: list[Path]) -> str:
+    """Claude API 실패 시 제목만으로 축약본 생성"""
+    lines = [f"📺 YouTube 신규 ({datetime.now().strftime('%m/%d')}) — {len(files)}건\n"]
+    lines.append("(자동 분석 실패 — 제목만 표시)\n")
+    for i, f in enumerate(files, 1):
+        content = f.read_text(encoding="utf-8")
+        m = re.search(r'title:\s*"(.+?)"', content)
+        title = m.group(1) if m else f.stem
+        host, topic = identify_host(title)
+        display = host if host else f.parent.name
+        m2 = re.search(r'url:\s*"(.+?)"', content)
+        url = m2.group(1) if m2 else ""
+        lines.append(f"{i}. {display}")
+        lines.append(f'   "{topic}"')
+        if url:
+            lines.append(f"   {url}")
+        lines.append("")
+    return "\n".join(lines)
+
+
 def main():
     print("=== Enrich & Notify 시작 ===")
 
@@ -390,12 +415,16 @@ def main():
     link_results = process_links(link_data)
 
     # ── 텔레그램 전송 ──
-    if not yt_results and not link_results:
+    has_yt = bool(yt_results) or bool(unenriched)
+    has_links = bool(link_results) or bool(link_data)
+
+    if not has_yt and not has_links:
         print("신규 콘텐츠 없음 — 스킵")
         return
 
     # YouTube 축약본
     if yt_results:
+        # enrichment 성공 — 풀 메시지
         overview = build_overview_message(yt_results)
         print(f"축약본 전송 ({len(overview)}자)")
         send_telegram(overview)
@@ -410,6 +439,11 @@ def main():
             detail = build_detail_message(f, r, i, len(inv_results))
             print(f"상세본 {i}/{len(inv_results)} 전송 ({len(detail)}자)")
             send_telegram(detail)
+    elif unenriched:
+        # enrichment 실패 — 제목만 전송
+        fallback = build_fallback_message(unenriched)
+        print(f"Fallback 축약본 전송 ({len(fallback)}자)")
+        send_telegram(fallback)
 
     # 링크 다이제스트
     if link_results:
@@ -427,8 +461,17 @@ def main():
             if narrative:
                 msg = f"{label}\n\n{narrative}"
                 send_telegram(msg)
+    elif link_data:
+        # 링크 enrichment 실패 — 최소 알림
+        lines = [f"📎 링크 수집 ({datetime.now().strftime('%m/%d')}) — {len(link_data)}건\n"]
+        lines.append("(자동 분석 실패 — 목록만 표시)\n")
+        for i, link in enumerate(link_data, 1):
+            url = link.get("url", "")
+            memo = link.get("memo", "")[:80]
+            lines.append(f"{i}. {link.get('type', '?')} — {url or memo}")
+        send_telegram("\n".join(lines))
 
-    print(f"=== 완료: YouTube {len(yt_results)}건, 링크 {len(link_results)}건 ===")
+    print(f"=== 완료: YouTube {len(yt_results)}건(미처리 {len(unenriched)}건), 링크 {len(link_results)}건 ===")
 
 
 if __name__ == "__main__":
