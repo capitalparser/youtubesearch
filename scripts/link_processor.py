@@ -20,8 +20,10 @@ REPO_ROOT = SCRIPT_DIR.parent
 OFFSET_FILE = SCRIPT_DIR / "telegram_offset.json"
 LINKS_DIR = REPO_ROOT / "data" / "links"
 
-BOT_TOKEN = "8622128158:AAEfL3xl8Y2p1_Ms78-9wqvsaQ9RoYJog7M"
-CHAT_ID = 7698095566
+import os
+
+BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+CHAT_ID = int(os.environ.get("TELEGRAM_CHAT_ID", "0"))
 API_BASE = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
 URL_PATTERN = re.compile(r'https?://[^\s<>"\']+')

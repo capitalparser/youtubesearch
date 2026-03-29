@@ -1,0 +1,54 @@
+name: YouTube + Link Digest
+
+on:
+  schedule:
+    - cron: '0 */4 * * *'  # 4시간마다 (UTC 0,4,8,12,16,20)
+  workflow_dispatch: {}      # 수동 실행 가능
+
+permissions:
+  contents: write
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install youtube-transcript-api requests anthropic
+
+      - name: Collect YouTube videos
+        run: python3 scripts/yt_collector_remote.py
+
+      - name: Collect Telegram links
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python3 scripts/link_processor.py
+
+      - name: Enrich + Send Telegram
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python3 scripts/enrich_and_notify.py
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "auto: digest $(date -u '+%Y-%m-%d %H:%M UTC')"
+            git push
+          fi
