@@ -10,6 +10,7 @@ sectors: [소비재, 소프트웨어, 금융]
 tickers: [SPY, QQQ, TLT, IEF, XLY, GLD, EWG, VGK]
 themes: [BofA불베어지표, 하트넷, 자금흐름, 달러약세, 유럽강세, 소비재역발상, AI생산성, 스태그플레이션]
 sentiment: neutral
+telegram_sent: false
 ---
 ## 핵심 요약
 

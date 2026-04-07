@@ -3,6 +3,14 @@ date: 2026-03-30
 type: bok_cross_reference
 bok_papers: ["제2026-7호", "제2026-3호"]
 youtube_themes: ["AI효율화", "메모리반도체수요", "일자리양극화"]
+enriched: true
+enriched_at: 2026-04-07
+categories: [매크로, 투자아이디어]
+sectors: [반도체, AI]
+tickers: [MU]
+themes: [BOK연구교차검증, 메모리반도체수요, AI효율화재번스역설, KV캐시압축]
+sentiment: neutral
+telegram_sent: false
 ---
 
 ## BOK 연구 교차검증 (2026-03-30)

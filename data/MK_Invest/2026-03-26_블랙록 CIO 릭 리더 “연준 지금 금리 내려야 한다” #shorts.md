@@ -16,6 +16,7 @@ sectors: [금융]
 tickers: []
 themes: [연준금리, 수익률곡선, 통화정책]
 sentiment: dovish
+telegram_sent: false
 ---
 ## 영상 정보
 

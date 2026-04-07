@@ -8,6 +8,14 @@ url: "https://www.bok.or.kr/portal/bbs/P0002456/view.do?nttId=10096005&searchCnd
 collected_at: 2026-03-24
 keywords: ["Brains", "Capital", "Regional", "연세대경제학", "부경대경제학", "한국은행경제", "생산성", "경제성"]
 related_projects: []
+enriched: true
+enriched_at: 2026-04-07
+categories: [매크로]
+sectors: []
+tickers: []
+themes: [임금격차, 인적자본이동, 지역불평등, 두뇌유출]
+sentiment: neutral
+telegram_sent: false
 ---
 
 ## 핵심 내용

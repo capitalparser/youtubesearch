@@ -16,6 +16,7 @@ sectors: [채권, ETF]
 tickers: [TLT, TMF]
 themes: [장기채, 인플레이션, 금리리스크, 레버리지ETF]
 sentiment: bearish
+telegram_sent: false
 ---
 ## 영상 정보
 

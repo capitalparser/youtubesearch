@@ -9,6 +9,14 @@ url: "https://www.youtube.com/watch?v=voGAMt1UWgk"
 collected_at: 2026-04-02
 has_transcript: false
 transcript_language: ""
+enriched: true
+enriched_at: 2026-04-07
+categories: [매크로]
+sectors: [금융]
+tickers: []
+themes: [연준통화정책, 금리방향불확실, 긴축사이클종료, 금리전망]
+sentiment: neutral
+telegram_sent: false
 ---
 ## 영상 정보
 

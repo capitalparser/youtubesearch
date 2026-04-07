@@ -16,6 +16,7 @@ sectors: [AI, 테크]
 tickers: []
 themes: [오픈AI, IPO, 소라종료, AI수익화]
 sentiment: neutral
+telegram_sent: false
 ---
 ## 영상 정보
 

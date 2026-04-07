@@ -8,6 +8,14 @@ url: "https://www.bok.or.kr/portal/bbs/P0002456/view.do?nttId=10096446&searchCnd
 collected_at: 2026-03-24
 keywords: ["Lending", "Evidence", "Korea", "가능성", "소비증가율", "증가율", "금융자유화", "외에도"]
 related_projects: []
+enriched: true
+enriched_at: 2026-04-07
+categories: [매크로, 산업분석]
+sectors: [금융]
+tickers: []
+themes: [취약계층대출, 금융포용, 가계부채위험, 신용접근성]
+sentiment: neutral
+telegram_sent: false
 ---
 
 ## 핵심 내용

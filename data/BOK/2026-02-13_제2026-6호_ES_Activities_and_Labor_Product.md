@@ -8,6 +8,14 @@ url: "https://www.bok.or.kr/portal/bbs/P0002456/view.do?nttId=10096484&searchCnd
 collected_at: 2026-03-24
 keywords: ["Activities", "Labor", "Productivity", "금융통화", "노동생산성", "동과노동생산성", "한국제", "체로비재무적성"]
 related_projects: []
+enriched: true
+enriched_at: 2026-04-07
+categories: [매크로]
+sectors: []
+tickers: []
+themes: [창업활동, 노동생산성, 기업가정신, 혁신경제]
+sentiment: neutral
+telegram_sent: false
 ---
 
 ## 핵심 내용

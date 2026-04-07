@@ -3,6 +3,14 @@ date: 2026-03-30
 type: cross_channel_consensus
 topics: ["메모리반도체", "이란전쟁"]
 channels_involved: ["한경 글로벌마켓", "매경 월가월부", "박종훈의 지식한방"]
+enriched: true
+enriched_at: 2026-04-07
+categories: [매크로, 투자아이디어]
+sectors: [반도체, AI, 에너지]
+tickers: [MU, WDC]
+themes: [크로스채널컨센서스, 메모리반도체, 이란전쟁장기화, 채널분석]
+sentiment: mixed
+telegram_sent: false
 ---
 
 ## 크로스채널 컨센서스 분석 (2026-03-30)

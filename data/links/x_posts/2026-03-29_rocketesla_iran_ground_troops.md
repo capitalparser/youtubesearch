@@ -10,6 +10,7 @@ sectors: [에너지, 원자재, 금융]
 tickers: [TLT, TMF, USO, XLE, GLD, UUP, EWZ]
 themes: [이란지상군, 후티참전, 미국채금리, 호르무즈, 바브엘만데브, 걸프전비교, 트럼프레드라인, 중간선거]
 sentiment: bearish
+telegram_sent: false
 ---
 ## 핵심 요약
 

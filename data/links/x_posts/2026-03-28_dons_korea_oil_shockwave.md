@@ -10,6 +10,7 @@ themes: [오일쇼크, 호르무즈, 유가, JPMorgan분석, 스톡디플리션,
 sectors: [에너지, 원자재]
 tickers: [XLE, USO, OXY, CVX, TAN]
 sentiment: bearish
+telegram_sent: false
 ---
 ## 핵심 요약
 
