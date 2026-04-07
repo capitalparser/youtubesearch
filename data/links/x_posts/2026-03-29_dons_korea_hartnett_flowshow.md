@@ -5,6 +5,8 @@ author: "@dons_korea"
 url: ""
 date: 2026-03-29
 type: x_post
+enriched: true
+enriched_at: 2026-04-07
 categories: [매크로, 투자아이디어]
 sectors: [소비재, 소프트웨어, 금융]
 tickers: [SPY, QQQ, TLT, IEF, XLY, GLD, EWG, VGK]

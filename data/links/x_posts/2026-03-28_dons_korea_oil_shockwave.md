@@ -5,10 +5,12 @@ author: "@dons_korea"
 url: ""
 date: 2026-03-28
 type: x_post
+enriched: true
+enriched_at: 2026-04-07
 categories: [매크로, 투자아이디어]
-themes: [오일쇼크, 호르무즈, 유가, JPMorgan분석, 스톡디플리션, 글로벌공급망]
 sectors: [에너지, 원자재]
 tickers: [XLE, USO, OXY, CVX, TAN]
+themes: [오일쇼크, 호르무즈, 유가, JPMorgan분석, 스톡디플리션, 글로벌공급망]
 sentiment: bearish
 telegram_sent: false
 ---
