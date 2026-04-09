@@ -9,6 +9,14 @@ url: "https://www.youtube.com/shorts/yXY78SQKByQ"
 collected_at: 2026-04-09
 has_transcript: false
 transcript_language: ""
+enriched: true
+enriched_at: 2026-04-09
+categories: [투자아이디어]
+sectors: [AI]
+tickers: [TSLA]
+themes: [SpaceX상장, IPO참여조건, 그록구독, 일론머스크, 우주기업투자]
+sentiment: bullish
+telegram_sent: false
 ---
 ## 영상 정보
 

@@ -9,6 +9,14 @@ url: "https://www.youtube.com/watch?v=v_c45NIhqVA"
 collected_at: 2026-04-09
 has_transcript: false
 transcript_language: ""
+enriched: true
+enriched_at: 2026-04-09
+categories: [산업분석]
+sectors: [반도체, AI]
+tickers: [NVDA, TSM]
+themes: [AI반도체, 엔비디아, TSMC, 공급망병목, AI인프라투자]
+sentiment: bullish
+telegram_sent: false
 ---
 ## 영상 정보
 
