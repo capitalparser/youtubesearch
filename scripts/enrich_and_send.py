@@ -26,7 +26,51 @@ ENRICHMENT_MAP = {
         "themes": ["이스라엘이란공습", "메디케어MA인상", "유나이티드헬스급등", "브로드컴TPU", "구글AI반도체", "매일뉴욕브리핑"],
         "sentiment": "mixed",
         "telegram_sent": False,
-    }
+    },
+    # MK_Invest 2026-04-15
+    "2026-04-15_모건스탠리 1분기 호실적": {
+        "enriched": True,
+        "enriched_at": TODAY,
+        "categories": ["시장동향", "종목분석"],
+        "sectors": ["금융", "AI", "자동차/EV"],
+        "tickers": ["MS", "TSLA"],
+        "themes": ["모건스탠리실적", "테슬라AI5칩", "중동병력배치", "1분기어닝시즌", "AI반도체"],
+        "sentiment": "mixed",
+        "telegram_sent": False,
+    },
+    # hkglobalmarket 2026-04-15 개장전
+    "2026-04-15_[빈난새의 개장전 요것만-4월15일]": {
+        "enriched": True,
+        "enriched_at": TODAY,
+        "categories": ["시장동향", "매크로"],
+        "sectors": [],
+        "tickers": [],
+        "themes": ["개장전브리핑", "미국증시", "특징주", "시장동향", "주요뉴스"],
+        "sentiment": "neutral",
+        "telegram_sent": False,
+    },
+    # hkglobalmarket 2026-04-15 달 귀환
+    "2026-04-15_54년 만의 달 귀환": {
+        "enriched": True,
+        "enriched_at": TODAY,
+        "categories": ["투자아이디어", "산업분석"],
+        "sectors": ["AI"],
+        "tickers": [],
+        "themes": ["민간우주시대", "달탐사귀환", "실리콘밸리", "우주산업투자", "뉴스페이스"],
+        "sentiment": "bullish",
+        "telegram_sent": False,
+    },
+    # hkglobalmarket 2026-04-15 중동 인플레
+    "2026-04-15_중동發 인플레 리스크": {
+        "enriched": True,
+        "enriched_at": TODAY,
+        "categories": ["매크로", "시장동향"],
+        "sectors": ["에너지"],
+        "tickers": [],
+        "themes": ["중동인플레리스크", "에너지가격상승", "물가4%전망", "금리전망", "지정학리스크"],
+        "sentiment": "bearish",
+        "telegram_sent": False,
+    },
 }
 
 
