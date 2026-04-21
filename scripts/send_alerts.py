@@ -1,174 +1,111 @@
 #!/usr/bin/env python3
-"""Send Telegram alerts for all unsent files and mark them sent."""
-
+"""Send Telegram alerts for all unsent markdown files."""
 import os
 import re
 import time
-import json
-import urllib.request
-import urllib.error
+import glob
+import requests
 
-DATA_DIR = "/home/user/youtubesearch/data"
 BOT_TOKEN = "8324061381:AAH5AWkw0Fiw66oem1DM2VgbY2-Bqs9fsrU"
 CHAT_ID = "7698095566"
 API_URL = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-
-FRONTMATTER_RE = re.compile(r"^---\n(.*?)\n---", re.DOTALL)
-
+DATA_DIR = "/home/user/youtubesearch/data"
 
 def parse_frontmatter(content):
-    """Parse YAML frontmatter without external deps."""
-    m = FRONTMATTER_RE.match(content)
-    if not m:
+    match = re.match(r'^---\n(.*?)\n---', content, re.DOTALL)
+    if not match:
         return {}
-    fm = {}
-    for line in m.group(1).splitlines():
-        if ": " in line:
-            key, _, val = line.partition(": ")
-            key = key.strip()
-            val = val.strip()
-            # Parse list values like [a, b, c] or ["a", "b"]
-            if val.startswith("[") and val.endswith("]"):
-                inner = val[1:-1].strip()
-                if not inner:
-                    fm[key] = []
-                else:
-                    items = [x.strip().strip('"').strip("'") for x in inner.split(",")]
-                    fm[key] = [x for x in items if x]
-            elif val in ("true", "false"):
-                fm[key] = val == "true"
-            else:
-                fm[key] = val.strip('"').strip("'")
-    return fm
+    fm_text = match.group(1)
+    fields = {}
+    for line in fm_text.split('\n'):
+        if ':' not in line:
+            continue
+        key, _, val = line.partition(':')
+        key = key.strip()
+        val = val.strip()
+        if val.startswith('[') and val.endswith(']'):
+            inner = val[1:-1].strip()
+            fields[key] = [x.strip() for x in inner.split(',')] if inner else []
+        else:
+            fields[key] = val.strip('"').strip("'")
+    return fields
 
-
-def build_message(fm, filepath):
-    """Build Telegram HTML message from frontmatter."""
-    source = fm.get("source", "")
-    file_type = fm.get("type", "")
-
-    title = fm.get("title", os.path.basename(filepath).replace(".md", ""))
-    date = fm.get("date", "")
-    url = fm.get("url", "")
-    sectors = fm.get("sectors", [])
-    tickers = fm.get("tickers", [])
-    themes = fm.get("themes", [])
-    sentiment = fm.get("sentiment", "")
-
-    # Determine channel/source label
-    if source == "YouTube":
-        channel = fm.get("channel", "YouTube")
-        header = f"<b>[{channel}]</b> {title}"
-    elif source == "BOK경제연구":
-        header = f"<b>[BOK경제연구]</b> {title}"
-    elif source == "X":
-        author = fm.get("author", "@unknown")
-        header = f"<b>[X / {author}]</b> {title}"
-    elif file_type == "cross_channel_consensus":
-        header = f"<b>[크로스채널 분석]</b> 컨센서스 리포트 {date}"
-    elif file_type:
-        header = f"<b>[분석]</b> {title or file_type} {date}"
+def set_telegram_sent(filepath, content):
+    if 'telegram_sent: false' in content:
+        new_content = content.replace('telegram_sent: false', 'telegram_sent: true', 1)
     else:
-        header = f"<b>[수집]</b> {title}"
-
-    lines = [header]
-    if date:
-        lines.append(f"📅 {date}")
-    if url:
-        lines.append(f'🔗 <a href="{url}">영상 보기</a>')
-    if sectors:
-        lines.append(f"📊 섹터: {', '.join(sectors)}")
-    if tickers:
-        lines.append(f"💹 종목: {', '.join(tickers)}")
-    if themes:
-        lines.append(f"🎯 테마: {', '.join(themes)}")
-    if sentiment:
-        lines.append(f"📈 센티먼트: {sentiment}")
-
-    return "\n".join(lines)
-
-
-def send_telegram(text):
-    """Send message via Telegram Bot API. Returns True on success."""
-    payload = json.dumps({
-        "chat_id": CHAT_ID,
-        "parse_mode": "HTML",
-        "text": text,
-    }).encode("utf-8")
-    req = urllib.request.Request(
-        API_URL,
-        data=payload,
-        headers={"Content-Type": "application/json"},
-        method="POST",
-    )
-    try:
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            body = json.loads(resp.read().decode("utf-8"))
-            return body.get("ok", False)
-    except urllib.error.HTTPError as e:
-        body = e.read().decode("utf-8")
-        print(f"  HTTP error {e.code}: {body[:200]}")
-        return False
-    except Exception as e:
-        print(f"  Network error: {e}")
-        return False
-
-
-def mark_sent(filepath, content):
-    """Replace telegram_sent: false with telegram_sent: true in file."""
-    new_content = content.replace("telegram_sent: false", "telegram_sent: true", 1)
-    with open(filepath, "w", encoding="utf-8") as f:
+        new_content = re.sub(r'(sentiment: \S+)\n(---)', r'\1\ntelegram_sent: true\n\2', content, count=1)
+    with open(filepath, 'w', encoding='utf-8') as f:
         f.write(new_content)
 
+def build_message(fm):
+    channel = fm.get('channel', '')
+    title = fm.get('title', '')
+    date = fm.get('date', '')
+    url = fm.get('url', '')
+    sectors = fm.get('sectors', [])
+    tickers = fm.get('tickers', [])
+    themes = fm.get('themes', [])
+    sentiment = fm.get('sentiment', '')
 
-def collect_unsent_files():
-    """Walk data dir and collect all .md files with telegram_sent: false."""
+    sectors_str = ', '.join(sectors) if isinstance(sectors, list) and sectors else '-'
+    themes_str = ', '.join(themes) if isinstance(themes, list) and themes else '-'
+
+    lines = [
+        f"<b>{channel}</b> {title}",
+        f"\u{1F4C5} {date}",
+        f'🔗 <a href="{url}">영상 보기</a>',
+        f"📊 섹터: {sectors_str}",
+    ]
+    if tickers and isinstance(tickers, list):
+        lines.append(f"💹 종목: {', '.join(tickers)}")
+    lines.append(f"🎯 테마: {themes_str}")
+    lines.append(f"📈 센티먼트: {sentiment}")
+    return '\n'.join(lines)
+
+def find_unsent_files():
+    all_md = glob.glob(os.path.join(DATA_DIR, '**', '*.md'), recursive=True)
     unsent = []
-    for root, dirs, files in os.walk(DATA_DIR):
-        # Sort for deterministic order
-        dirs.sort()
-        for fname in sorted(files):
-            if not fname.endswith(".md"):
-                continue
-            fpath = os.path.join(root, fname)
-            try:
-                with open(fpath, "r", encoding="utf-8") as f:
-                    content = f.read()
-                if "telegram_sent: false" in content:
-                    unsent.append((fpath, content))
-            except Exception as e:
-                print(f"  Warning: could not read {fpath}: {e}")
+    for path in sorted(all_md):
+        with open(path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        fm = parse_frontmatter(content)
+        ts = fm.get('telegram_sent', None)
+        if ts is None or str(ts).lower() == 'false':
+            unsent.append((path, content, fm))
     return unsent
 
-
 def main():
-    unsent = collect_unsent_files()
+    unsent = find_unsent_files()
     print(f"Found {len(unsent)} unsent files.")
-
-    sent_count = 0
-    failed_count = 0
-
-    for i, (fpath, content) in enumerate(unsent, 1):
-        rel = os.path.relpath(fpath, DATA_DIR)
-        fm = parse_frontmatter(content)
-        msg = build_message(fm, fpath)
-
-        print(f"[{i}/{len(unsent)}] Sending: {rel}")
-        ok = send_telegram(msg)
-
-        if ok:
-            mark_sent(fpath, content)
-            sent_count += 1
-            print(f"  ✓ sent")
-        else:
-            failed_count += 1
-            print(f"  ✗ FAILED")
-
-        if i < len(unsent):
+    sent = 0
+    failed = 0
+    for i, (path, content, fm) in enumerate(unsent):
+        filename = os.path.basename(path)
+        if not fm.get('title'):
+            print(f"[SKIP] No title: {filename}")
+            continue
+        msg = build_message(fm)
+        try:
+            resp = requests.post(API_URL, json={
+                "chat_id": CHAT_ID,
+                "parse_mode": "HTML",
+                "text": msg
+            }, timeout=15)
+            data = resp.json()
+            if resp.status_code == 200 and data.get('ok'):
+                set_telegram_sent(path, content)
+                sent += 1
+                print(f"[OK {sent}] {filename}")
+            else:
+                failed += 1
+                print(f"[FAIL] {filename}: {data}")
+        except Exception as e:
+            failed += 1
+            print(f"[ERROR] {filename}: {e}")
+        if i < len(unsent) - 1:
             time.sleep(1)
+    print(f"\nDone. Sent: {sent}, Failed: {failed}")
 
-    print(f"\n=== Done: {sent_count} sent, {failed_count} failed ===")
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
