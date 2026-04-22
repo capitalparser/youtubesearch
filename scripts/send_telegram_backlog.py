@@ -9,8 +9,8 @@ import json
 import requests
 import yaml
 
-BOT_TOKEN = "8324061381:AAH5AWkw0Fiw66oem1DM2VgbY2-Bqs9fsrU"
-CHAT_ID = "7698095566"
+BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "8324061381:AAH5AWkw0Fiw66oem1DM2VgbY2-Bqs9fsrU")
+CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "7698095566")
 API_URL = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
 
 
