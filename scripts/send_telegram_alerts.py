@@ -29,16 +29,13 @@ def parse_frontmatter(content):
     return fm, content
 
 
-def rebuild_content(content, fm):
-    """Replace the YAML frontmatter in content with updated fm dict."""
-    m = FRONTMATTER_RE.match(content)
-    if not m:
-        return content
-    new_yaml = yaml.dump(fm, allow_unicode=True, default_flow_style=False, sort_keys=False)
-    # Remove trailing newline from yaml.dump to keep consistent
-    new_yaml = new_yaml.rstrip("\n")
-    rest = content[m.end():]
-    return f"---\n{new_yaml}\n---\n{rest}"
+def mark_telegram_sent(content):
+    """Flip telegram_sent: false → true without reformatting the rest of the frontmatter."""
+    new = re.sub(r"(telegram_sent:\s*)false", r"\1true", content, count=1)
+    if new == content:
+        # Field missing entirely — inject before closing ---
+        new = re.sub(r"\n---\n", "\ntelegram_sent: true\n---\n", content, count=1)
+    return new
 
 
 def format_message(fm):
@@ -119,9 +116,7 @@ def main():
         if resp.status_code == 200:
             data = resp.json()
             if data.get("ok"):
-                # Update telegram_sent in file
-                fm["telegram_sent"] = True
-                new_content = rebuild_content(content, fm)
+                new_content = mark_telegram_sent(content)
                 with open(fp, "w", encoding="utf-8") as f:
                     f.write(new_content)
                 sent_count += 1
