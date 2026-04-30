@@ -53,7 +53,7 @@ def build_message(fm):
 
     lines = [
         f"<b>{channel}</b> {title}",
-        f"\u{1F4C5} {date}",
+        f"📅 {date}",
         f'🔗 <a href="{url}">영상 보기</a>',
         f"📊 섹터: {sectors_str}",
     ]
