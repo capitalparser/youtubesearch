@@ -13,7 +13,7 @@ CHAT_ID = "7698095566"
 TELEGRAM_URL = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 
-EXCLUDE_DIRS = {"analysis", "links"}
+EXCLUDE_DIRS = set()  # process all directories
 
 
 def parse_frontmatter(content):
@@ -97,8 +97,21 @@ def build_message(fm, filepath):
     except ValueError:
         channel_dir = "unknown"
 
-    channel = fm.get("channel", channel_dir)
-    title = fm.get("title", os.path.basename(filepath).replace(".md", ""))
+    # Prefer channel > source > author > directory name
+    channel = fm.get("channel") or fm.get("source") or fm.get("author") or channel_dir
+
+    # Prefer title; fall back to type or filename
+    title = fm.get("title", "")
+    if not title:
+        doc_type = fm.get("type", "")
+        if doc_type == "cross_channel_consensus":
+            title = "크로스채널 컨센서스 분석"
+        elif doc_type == "bok_cross_reference":
+            title = "BOK 연구 교차검증"
+        elif doc_type:
+            title = doc_type
+        else:
+            title = os.path.basename(filepath).replace(".md", "")
     date = fm.get("date", "")
     url = fm.get("url", "")
     sectors = fm.get("sectors", [])
