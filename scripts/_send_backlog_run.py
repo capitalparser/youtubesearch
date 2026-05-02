@@ -66,8 +66,13 @@ def parse_frontmatter(text):
 
 
 def build_message(fm):
-    channel = fm.get("channel") or fm.get("source") or "알 수 없음"
-    title = fm.get("title", "")
+    # Derive channel label (handle cross-channel analysis files)
+    channel = (fm.get("channel") or fm.get("source") or
+               fm.get("type", "").replace("_", " ") or "분석")
+    # Derive title (handle files using topics field instead)
+    topics = fm.get("topics", [])
+    title = (fm.get("title", "") or
+             (", ".join(topics) if topics else ""))
     date = fm.get("date", "")
     url = fm.get("url", "")
     sectors = ", ".join(fm.get("sectors", [])) or "-"
@@ -78,9 +83,10 @@ def build_message(fm):
     lines = [
         f"<b>{channel}</b> {title}",
         f"📅 {date}",
-        f'🔗 <a href="{url}">영상 보기</a>',
-        f"📊 섹터: {sectors}",
     ]
+    if url:
+        lines.append(f'🔗 <a href="{url}">영상 보기</a>')
+    lines.append(f"📊 섹터: {sectors}")
     if tickers:
         lines.append(f"💹 종목: {', '.join(tickers)}")
     lines.append(f"🎯 테마: {themes}")
