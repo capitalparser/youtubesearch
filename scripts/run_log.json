@@ -1,5 +1,5 @@
 {
-    "run_at": "2026-06-14T21:08:00+09:00",
+    "run_at": "2026-06-15T00:00:00+09:00",
     "steps": {
         "collect": {
             "status": "blocked",
@@ -57,6 +57,6 @@
             ]
         }
     },
-    "last_agent_run_at": "2026-06-14T21:08:00+09:00",
-    "note": "2026-06-14 21:08 KST: Sandbox network blocks youtube.com and api.telegram.org (HTTP 403). 0 new videos, 0 Telegram alerts from sandbox. GHA workflow ran successfully at 11:27 UTC but discovered 2 videos that were skipped — YOUTUBE_COOKIES secret is expired (yt-dlp bot-check error). Update the YOUTUBE_COOKIES secret to unblock transcript collection on GHA."
+    "last_agent_run_at": "2026-06-15T00:00:00+09:00",
+    "note": "2026-06-15 00:00 KST: Sandbox network blocks youtube.com and api.telegram.org (HTTP 403). 0 new videos, 0 Telegram alerts from sandbox. GHA workflow ran successfully at 11:27 UTC on 2026-06-14 but discovered 2 videos that were skipped — YOUTUBE_COOKIES secret is expired (yt-dlp bot-check error). Update the YOUTUBE_COOKIES secret to unblock transcript collection on GHA."
 }
