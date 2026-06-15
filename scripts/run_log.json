@@ -1,5 +1,5 @@
 {
-    "run_at": "2026-06-15T00:00:00+09:00",
+    "run_at": "2026-06-15T09:21:00+09:00",
     "steps": {
         "collect": {
             "status": "blocked",
@@ -40,23 +40,34 @@
             "failed": 0
         },
         "gha_status": {
-            "last_run": "2026-06-14T11:27:31Z",
+            "last_run": "2026-06-14T23:09:34Z",
+            "last_run_id": 27515038665,
             "last_run_conclusion": "success",
+            "kst_equivalent": "2026-06-15T08:09:34+09:00",
             "discovered": 2,
             "processed": 0,
             "skipped_no_caption": 2,
             "failed": 0,
+            "daily_brief_generated": true,
+            "daily_brief_sent": true,
+            "daily_brief_telegram_id": 432,
+            "vault_mds_found": 11,
+            "videos_skipped": [
+                "Y_SF6hDBsP8",
+                "g6MBz4YuaJ4"
+            ],
             "node_upgrade": {
                 "status": "done",
                 "completed_at": "2026-06-10",
                 "detail": "actions/checkout@v4→@v6, astral-sh/setup-uv@v3→@v7 in both digest.yml and ci.yml. Node.js 24-compatible before June 16 deadline."
             },
             "action_required": [
-                "CRITICAL: YOUTUBE_COOKIES secret is expired — yt-dlp fails on every video with 'Sign in to confirm you're not a bot'. GHA discovered 2 videos today (Y_SF6hDBsP8, g6MBz4YuaJ4) but skipped both. Re-export fresh cookies from a logged-in YouTube browser session and update the YOUTUBE_COOKIES GitHub Actions secret.",
+                "CRITICAL #1: YOUTUBE_COOKIES_RAW secret is EXPIRED — yt-dlp fails on every video with 'Sign in to confirm you're not a bot'. Cookies were written (4523 bytes, 25 youtube.com entries) but are stale. Re-export fresh cookies from a logged-in YouTube browser session and update the YOUTUBE_COOKIES_RAW GitHub Actions secret.",
+                "CRITICAL #2: Google Drive service account has storageQuotaExceeded — daily brief MD (2026-06-14_brief.md) could NOT be pushed to Drive. Fix: move Drive folder to a Shared Drive (Team Drive) where service accounts have quota, or switch to OAuth delegation. See: https://developers.google.com/workspace/drive/api/guides/about-shareddrives",
                 "SECONDARY: config/watchlist.yaml not found on Drive. Pipeline runs with empty watchlist (auto-discovery only). Upload watchlist.yaml to Drive root if watchlist matching is needed."
             ]
         }
     },
-    "last_agent_run_at": "2026-06-15T00:00:00+09:00",
-    "note": "2026-06-15 00:00 KST: Sandbox network blocks youtube.com and api.telegram.org (HTTP 403). 0 new videos, 0 Telegram alerts from sandbox. GHA workflow ran successfully at 11:27 UTC on 2026-06-14 but discovered 2 videos that were skipped — YOUTUBE_COOKIES secret is expired (yt-dlp bot-check error). Update the YOUTUBE_COOKIES secret to unblock transcript collection on GHA."
+    "last_agent_run_at": "2026-06-15T09:21:00+09:00",
+    "note": "2026-06-15 09:21 KST: Sandbox blocks youtube.com + api.telegram.org (HTTP 403) — 0 new videos, 0 Telegram alerts from sandbox. GHA ran at 08:09 KST today: found 2 new videos (Y_SF6hDBsP8, g6MBz4YuaJ4) but SKIPPED both — YOUTUBE_COOKIES_RAW is expired. Daily brief for 2026-06-14 was generated from 11 vault MDs and Telegram-sent (id=432), but Drive push FAILED (storageQuotaExceeded on service account). Two blockers require user action: (1) refresh YOUTUBE_COOKIES_RAW, (2) fix Drive quota."
 }
